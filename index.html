@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" class="light-mode">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feras Alkhodari</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Feras Alkhodari</div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <button class="theme-toggle" id="theme-toggle" aria-label="تبديل المظهر">
+            <i class="fas fa-moon"></i>
+        </button>
+        <div class="menu-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Hi, I'm Feras Alkhodari</h1>
+            <div class="typing-container">
+                <span class="static-text">I'm a</span>
+                <span class="dynamic-text"></span>
+            </div>
+            <div class="cta-buttons">
+                <a href="#projects" class="btn primary">View My Work</a>
+                <a href="#contact" class="btn secondary">Get In Touch</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="mouse"></div>
+            <p>Scroll Down</p>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <h2>About Me</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <p>I'm a near graduate Software Engineer with a passion for creating innovative solutions. I specialize in web development and application development and software engineering, always eager to learn new technologies and tackle challenging projects.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="skills">
+        <h2>Technical Skills</h2>
+        <div class="skills-container">
+            <div class="skill-category">
+                <h3>Frontend</h3>
+                <div class="skill-items">
+                    <div class="skill-item">
+                        <i class="fab fa-html5"></i>
+                        <span>HTML5</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fab fa-css3-alt"></i>
+                        <span>CSS3</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fab fa-js"></i>
+                        <span>JavaScript</span>
+                    </div>
+                </div>
+            </div>
+            <div class="skill-category">
+                <h3>Backend</h3>
+                <div class="skill-items">
+                    <div class="skill-item">
+                        <i class="fab fa-python"></i>
+                        <span>Python</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fab fa-node-js"></i>
+                        <span>Node.js</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fab fa-microsoft"></i>
+                        <span>.NET</span>
+                    </div>
+                </div>
+            </div>
+            <div class="skill-category">
+                <h3>Tools & Others</h3>
+                <div class="skill-items">
+                    <div class="skill-item">
+                        <i class="fab fa-git-alt"></i>
+                        <span>Git</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub</span>
+                    </div>
+                    <div class="skill-item">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Postman</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="projects">
+        <h2>Featured Projects</h2>
+        <div class="project-grid">
+            <div class="project-card">
+                <div class="project-content">
+                    <h3>SymptomsEaseAI</h3>
+                    <p>AI-powered application designed to assist healthcare providers by automating the analysis of audio consultations, supporting recording, transcription, and disease prediction.</p>
+                    <div class="project-tech">
+                        <span>Python</span>
+                        <span>AI/ML</span>
+                        <span>tkinter</span>
+                        <span>NLP</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/FerasAlhkodari/SymptomsEaseAi.git" target="_blank" class="btn">View Project</a>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-content">
+                    <h3>ERP Lite</h3>
+                    <p>A lightweight, modular Enterprise Resource Planning system built with ASP.NET Core and Entity Framework Core, designed for medium-sized organizations with clean architecture and modern practices.</p>
+                    <div class="project-tech">
+                        <span>.NET Core</span>
+                        <span>SQL Server</span>
+                        <span>Entity Framework</span>
+                        <span>JWT</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/FerasAlhkodari/ERPLite.git" target="_blank" class="btn">View Project</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <h2>Get In Touch</h2>
+        <div class="contact-content">
+            <div class="contact-info">
+                <h3>Let's Connect</h3>
+                <p>Feel free to reach out for collaborations, job opportunities, or just a friendly hello!</p>
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:ferasalkhodari51@gmail.com">ferasalkhodari51@gmail.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Available for On-site or Remote Opportunities</span>
+                    </div>
+                </div>
+            </div>
+            <form id="contact-form" onsubmit="sendEmail(event)">
+                <div class="form-group">
+                    <input type="text" id="name" name="name" placeholder="Your Name" required>
+                    <span class="focus-border"></span>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" name="email" placeholder="Your Email" required>
+                    <span class="focus-border"></span>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="subject" name="subject" placeholder="Subject" required>
+                    <span class="focus-border"></span>
+                </div>
+                <div class="form-group">
+                    <textarea id="message" name="message" placeholder="Your Message" required></textarea>
+                    <span class="focus-border"></span>
+                </div>
+                <button type="submit" class="btn primary">
+                    <span>Send Message</span>
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+            <div class="social-links">
+                <a href="https://github.com/FerasAlhkodari" target="_blank" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/feras-alkhodari-9b8598298/" target="_blank" title="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="experience" class="experience">
+        <h2>Experience & Education</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>Software Engineering Near Graduate</h3>
+                    <p class="timeline-date">2024</p>
+                    <ul class="timeline-details">
+                        <li>Developed an advanced AI Natural Language Processing project as part of graduation requirements</li>
+                        <li>Implemented enterprise-level .NET solutions based on professional experience gained from collaborative teams in 2022</li>
+                        <li>Completed internship at King Fahd Armed Forces Hospital (KFAFH) focusing on UI/UX design and Enterprise Resource Planning systems</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>Academic Development</h3>
+                    <p class="timeline-date">2023</p>
+                    <ul class="timeline-details">
+                        <li>Advanced coursework in software architecture and engineering methodologies</li>
+                        <li>Concentrated on modern web technologies and application development frameworks</li>
+                        <li>Completed comprehensive Linux administration and Full-Stack Web Development certification courses</li>
+                        <li>Initiated collaborative freelance projects with cross-functional development teams</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3>Web & Application Development</h3>
+                    <p class="timeline-date">2022 - Present</p>
+                    <ul class="timeline-details">
+                        <li>Engineered responsive, user-centric web applications with focus on performance optimization</li>
+                        <li>Utilized contemporary frontend frameworks and component-based architecture</li>
+                        <li>Participated in agile development teams on diverse client projects</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="testimonials">
+        <h2>Skills & Technologies</h2>
+        <div class="skills-grid">
+            <div class="skill-category">
+                <h3>Frontend Development</h3>
+                <div class="skill-bars">
+                    <div class="skill-bar">
+                        <span class="skill-label">HTML5/CSS3</span>
+                        <div class="bar">
+                            <div class="progress" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-bar">
+                        <span class="skill-label">JavaScript</span>
+                        <div class="bar">
+                            <div class="progress" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-bar">
+                        <span class="skill-label">React.js</span>
+                        <div class="bar">
+                            <div class="progress" style="width: 80%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="skill-category">
+                <h3>Backend Development</h3>
+                <div class="skill-bars">
+                    <div class="skill-bar">
+                        <span class="skill-label">Node.js</span>
+                        <div class="bar">
+                            <div class="progress" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-bar">
+                        <span class="skill-label">Python</span>
+                        <div class="bar">
+                            <div class="progress" style="width: 80%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-bar">
+                        <span class="skill-label">.NET</span>
+                        <div class="bar">
+                            <div class="progress" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Feras Alkhodari. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js" type="text/javascript"></script>
+    <script src="js/particles.js"></script>
+</body>
+</html>

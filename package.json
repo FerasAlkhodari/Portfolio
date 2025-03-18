@@ -1,0 +1,31 @@
+{
+  "name": "professional-portfolio",
+  "version": "1.0.0",
+  "description": "Professional Software Engineer Portfolio",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "aos": "^2.3.4",
+    "gsap": "^3.12.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "swiper": "^10.3.1",
+    "three": "^0.156.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.15",
+    "postcss": "^8.4.29",
+    "tailwindcss": "^3.3.3",
+    "vite": "^4.4.9"
+  },
+  "main": "script.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
