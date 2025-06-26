@@ -178,6 +178,10 @@
                         <span>System Deployment</span>
                         <span>Enterprise Management</span>
                     </div>
+                    <button class="certificate-btn" onclick="viewCertificate('images/certificates/AD183-7.0.jpg')">
+                        <span>View Certificate</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
                 </div>
             </div>
             
@@ -196,6 +200,10 @@
                         <span>System Administration</span>
                         <span>RHEL</span>
                     </div>
+                    <button class="certificate-btn" onclick="viewCertificate('images/certificates/RH124-9.0.jpg')">
+                        <span>View Certificate</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
                 </div>
             </div>
             
@@ -215,6 +223,10 @@
                         <span>Express.js</span>
                         <span>REST APIs</span>
                     </div>
+                    <button class="certificate-btn" onclick="viewCertificate('images/certificates/WebCource.jpg')">
+                        <span>View Certificate</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
                 </div>
             </div>
             
@@ -234,6 +246,10 @@
                         <span>Cross-Platform</span>
                         <span>UI/UX Design</span>
                     </div>
+                    <button class="certificate-btn" onclick="viewCertificate('images/certificates/FlutterCourse.jpg')">
+                        <span>View Certificate</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -392,6 +408,28 @@
             </div>
         </div>
     </section>
+
+    <!-- Certificate Modal -->
+    <div id="certificateModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCertificateModal()">&times;</span>
+            <div class="modal-header">
+                <h3>Certificate Preview</h3>
+            </div>
+            <div class="modal-body">
+                <iframe id="certificateFrame" src="" frameborder="0"></iframe>
+                <div id="certificateImage" style="display:none;">
+                    <img id="certificateImg" src="" alt="Certificate">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn primary" onclick="openCertificateInNewTab()">
+                    <span>Open in New Tab</span>
+                    <i class="fas fa-external-link-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <footer>
         <p>&copy; 2025 Feras Alkhodari. All rights reserved.</p>

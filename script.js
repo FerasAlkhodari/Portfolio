@@ -151,3 +151,68 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// Certificate Modal Functions
+let currentCertificateUrl = '';
+
+function viewCertificate(certificateUrl) {
+    currentCertificateUrl = certificateUrl;
+    const modal = document.getElementById('certificateModal');
+    const iframe = document.getElementById('certificateFrame');
+    const imageDiv = document.getElementById('certificateImage');
+    const img = document.getElementById('certificateImg');
+    
+    // Encode URL to handle special characters and spaces
+    const encodedUrl = encodeURI(certificateUrl);
+    
+    // Check if file is PDF or HTML/image
+    if (certificateUrl.toLowerCase().endsWith('.pdf')) {
+        iframe.style.display = 'block';
+        imageDiv.style.display = 'none';
+        iframe.src = encodedUrl;
+    } else if (certificateUrl.toLowerCase().endsWith('.html')) {
+        iframe.style.display = 'block';
+        imageDiv.style.display = 'none';
+        iframe.src = encodedUrl;
+    } else {
+        // Assume it's an image
+        iframe.style.display = 'none';
+        imageDiv.style.display = 'block';
+        img.src = encodedUrl;
+    }
+    
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCertificateModal() {
+    const modal = document.getElementById('certificateModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+    
+    // Clear iframe src to stop loading
+    document.getElementById('certificateFrame').src = '';
+    document.getElementById('certificateImg').src = '';
+    currentCertificateUrl = '';
+}
+
+function openCertificateInNewTab() {
+    if (currentCertificateUrl) {
+        window.open(encodeURI(currentCertificateUrl), '_blank');
+    }
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', (event) => {
+    const modal = document.getElementById('certificateModal');
+    if (event.target === modal) {
+        closeCertificateModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        closeCertificateModal();
+    }
+});
+
