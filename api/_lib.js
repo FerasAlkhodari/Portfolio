@@ -123,6 +123,19 @@ function createSessionToken() {
 // ---------------------------------------------------------------------------
 // Cookies
 // ---------------------------------------------------------------------------
+// decodeURIComponent throws "URI malformed" on values containing a raw "%"
+// (very common in 3rd-party cookies: _ga, A/B flags, "50%off", etc.). A single
+// bad cookie must NEVER crash the function, so decode each value defensively and
+// fall back to the raw string. Our own session cookie is base64url (no "%"), so
+// it always round-trips correctly.
+function safeDecode(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 function parseCookies(req) {
   const header = req.headers.cookie || '';
   const out = {};
@@ -131,7 +144,7 @@ function parseCookies(req) {
     if (idx > -1) {
       const k = pair.slice(0, idx).trim();
       const v = pair.slice(idx + 1).trim();
-      if (k) out[k] = decodeURIComponent(v);
+      if (k) out[k] = safeDecode(v);
     }
   });
   return out;
@@ -158,9 +171,14 @@ function clearSessionCookie(res) {
 }
 
 // Returns the session payload if the request carries a valid admin cookie, else null.
+// Never throws — a parsing problem just means "not authenticated".
 function getSession(req) {
-  const cookies = parseCookies(req);
-  return verifyToken(cookies[COOKIE_NAME], getSessionSecret());
+  try {
+    const cookies = parseCookies(req);
+    return verifyToken(cookies[COOKIE_NAME], getSessionSecret());
+  } catch {
+    return null;
+  }
 }
 
 // Guard helper — returns true if authorized, otherwise writes a 401 and returns false.
