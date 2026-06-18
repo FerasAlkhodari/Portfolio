@@ -81,16 +81,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const themeToggle = document.getElementById('theme-toggle');
     const themeIcon = themeToggle.querySelector('i');
     
-    // تعيين الوضع الفاتح كافتراضي إذا لم يكن هناك تفضيل محفوظ
+    // تعيين الوضع الداكن كافتراضي إذا لم يكن هناك تفضيل محفوظ
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.documentElement.classList.remove('light-mode');
-        themeIcon.classList.replace('fa-moon', 'fa-sun');
-    } else {
-        // تعيين الوضع الفاتح كافتراضي
+    if (savedTheme === 'light') {
         document.documentElement.classList.add('light-mode');
         themeIcon.classList.replace('fa-sun', 'fa-moon');
-        localStorage.setItem('theme', 'light');
+    } else {
+        // تعيين الوضع الداكن كافتراضي
+        document.documentElement.classList.remove('light-mode');
+        themeIcon.classList.replace('fa-moon', 'fa-sun');
+        localStorage.setItem('theme', 'dark');
     }
     
     // تبديل المظهر عند النقر على الزر
