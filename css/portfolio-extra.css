@@ -168,3 +168,75 @@
     justify-content: center;
   }
 }
+
+/* ===== EN / AR language support ===== */
+
+/* Arabic webfont (only matters when Arabic is active) */
+html.lang-ar body {
+  font-family: 'Tajawal', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Language toggle button — mirrors the theme-toggle */
+.lang-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+.lang-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* ---- RTL tweaks (only when dir=rtl) ---- */
+html[dir='rtl'] .static-text {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+html[dir='rtl'] .dynamic-text {
+  border-right: none;
+  border-left: 3px solid #64ffda;
+  padding-right: 0;
+  padding-left: 5px;
+}
+html.light-mode[dir='rtl'] .dynamic-text {
+  border-left-color: #4f46e5;
+}
+html[dir='rtl'] .timeline-details li {
+  padding-left: 0;
+  padding-right: 1.5rem;
+}
+html[dir='rtl'] .timeline-details li::before {
+  left: auto;
+  right: 0;
+}
+html[dir='rtl'] .theme-toggle,
+html[dir='rtl'] .lang-toggle {
+  margin-left: 0;
+  margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+  html[dir='rtl'] .theme-toggle {
+    margin-right: 0;
+    margin-left: 50px;
+  }
+  html[dir='rtl'] .nav-links {
+    right: auto;
+    left: 20px;
+    align-items: flex-start;
+  }
+  html[dir='rtl'] .nav-links li {
+    text-align: right;
+  }
+}

@@ -1,14 +1,19 @@
 /**
- * Public content hydrator.
+ * Public content hydrator (bilingual EN/AR aware).
  *
  * Fetches your saved content from /api/content and renders it into the EXISTING
- * page sections, reproducing the original markup exactly. If the backend is
- * unreachable (offline, opened as a local file, functions down), it does nothing
- * and the static HTML already in index.html stays on screen — so the site never
- * breaks. New project images/widgets only appear when you add them in the admin.
+ * page sections. Each translatable field can be a plain string OR a bilingual
+ * object { en, ar }. When Arabic is active, pick() returns the explicit Arabic
+ * if present, otherwise falls back to the baked translation dictionary (js/i18n.js),
+ * otherwise the English. Re-renders when the language toggles.
+ *
+ * If the backend is unreachable, it does nothing and the static HTML stays — so
+ * the site never breaks.
  */
 (function () {
   'use strict';
+
+  let lastContent = null;
 
   // ---- escaping helpers ----------------------------------------------------
   function esc(value) {
@@ -19,23 +24,43 @@
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
   }
-  // For href/src attribute values: block javascript: and other unsafe schemes.
   function safeUrl(value) {
     const v = String(value == null ? '' : value).trim();
     if (!v) return '';
     if (/^\s*javascript:/i.test(v) || /^\s*data:text\/html/i.test(v)) return '';
     return v;
   }
-
   function arr(v) {
     return Array.isArray(v) ? v : [];
   }
+
+  // ---- language helpers ----------------------------------------------------
+  function langIsAr() {
+    return !!(window.PORTFOLIO_I18N && typeof window.PORTFOLIO_I18N.lang === 'function'
+      ? window.PORTFOLIO_I18N.lang() === 'ar'
+      : false);
+  }
+  function tr(s) {
+    return window.PORTFOLIO_I18N && typeof window.PORTFOLIO_I18N.tr === 'function'
+      ? window.PORTFOLIO_I18N.tr(s)
+      : s;
+  }
+  // Returns the right-language text for a field that may be a string or {en, ar}.
+  function pick(field) {
+    if (field && typeof field === 'object' && !Array.isArray(field) && ('en' in field || 'ar' in field)) {
+      if (langIsAr()) return field.ar ? field.ar : tr(field.en || '');
+      return field.en || '';
+    }
+    const s = field == null ? '' : String(field);
+    return langIsAr() ? tr(s) : s;
+  }
+  // expose for script.js (typewriter roles)
+  window.PORTFOLIO_PICK = pick;
 
   function setText(selector, value) {
     const el = document.querySelector(selector);
     if (el && value != null && value !== '') el.textContent = value;
   }
-
   function setHtml(selector, html) {
     const el = document.querySelector(selector);
     if (el) el.innerHTML = html;
@@ -52,14 +77,14 @@
               '<div class="skill-item"><i class="' +
               esc(it.icon) +
               '"></i><span>' +
-              esc(it.name) +
+              esc(pick(it.name)) +
               '</span></div>'
             );
           })
           .join('');
         return (
           '<div class="skill-category"><h3>' +
-          esc(cat.title) +
+          esc(pick(cat.title)) +
           '</h3><div class="skill-items">' +
           items +
           '</div></div>'
@@ -75,7 +100,7 @@
       .map(function (w) {
         const url = safeUrl(w.url);
         const img = safeUrl(w.image);
-        const label = esc(w.label || '');
+        const label = esc(pick(w.label) || '');
         if (img && url) {
           return (
             '<a class="project-widget" href="' +
@@ -90,7 +115,6 @@
           );
         }
         if (img) {
-          // No link -> clicking enlarges the image in the existing modal viewer.
           return (
             '<button type="button" class="project-widget" data-img="' +
             esc(img) +
@@ -123,13 +147,10 @@
   function renderProjects(projects) {
     return arr(projects)
       .map(function (p) {
+        const title = esc(pick(p.title));
         const image = safeUrl(p.image);
         const banner = image
-          ? '<div class="project-image"><img src="' +
-            esc(image) +
-            '" alt="' +
-            esc(p.title) +
-            '" loading="lazy"></div>'
+          ? '<div class="project-image"><img src="' + esc(image) + '" alt="' + title + '" loading="lazy"></div>'
           : '';
         const tech = arr(p.tech)
           .map(function (t) {
@@ -141,23 +162,17 @@
             const url = safeUrl(l.url);
             if (!url) return '';
             const icon = l.icon ? '<i class="' + esc(l.icon) + '"></i> ' : '';
-            return (
-              '<a href="' +
-              esc(url) +
-              '" target="_blank" class="btn">' +
-              icon +
-              esc(l.label || 'View Project') +
-              '</a>'
-            );
+            const label = pick(l.label) || (langIsAr() ? tr('View Project') : 'View Project');
+            return '<a href="' + esc(url) + '" target="_blank" class="btn">' + icon + esc(label) + '</a>';
           })
           .join('');
         return (
           '<div class="project-card">' +
           banner +
           '<div class="project-content"><h3>' +
-          esc(p.title) +
+          title +
           '</h3><p>' +
-          esc(p.description) +
+          esc(pick(p.description)) +
           '</p>' +
           renderProjectWidgets(p.widgets) +
           '<div class="project-tech">' +
@@ -179,22 +194,23 @@
           })
           .join('');
         const image = safeUrl(c.image);
+        const btnLabel = langIsAr() ? tr('View Certificate') : 'View Certificate';
         const btn = image
           ? '<button class="certificate-btn" data-cert="' +
             esc(image) +
-            '"><span>View Certificate</span><i class="fas fa-external-link-alt"></i></button>'
+            '"><span>' + esc(btnLabel) + '</span><i class="fas fa-external-link-alt"></i></button>'
           : '';
         return (
           '<div class="certificate-card"><div class="certificate-icon"><i class="' +
           esc(c.icon) +
           '"></i></div><div class="certificate-content"><h3>' +
-          esc(c.title) +
+          esc(pick(c.title)) +
           '</h3><p class="certificate-issuer">' +
-          esc(c.issuer) +
+          esc(pick(c.issuer)) +
           '</p><p class="certificate-date">' +
-          esc(c.date) +
+          esc(pick(c.date)) +
           '</p><p class="certificate-description">' +
-          esc(c.description) +
+          esc(pick(c.description)) +
           '</p><div class="certificate-skills">' +
           skills +
           '</div>' +
@@ -210,14 +226,14 @@
       .map(function (e) {
         const details = arr(e.details)
           .map(function (d) {
-            return '<li>' + esc(d) + '</li>';
+            return '<li>' + esc(pick(d)) + '</li>';
           })
           .join('');
         return (
           '<div class="timeline-item"><div class="timeline-content"><h3>' +
-          esc(e.title) +
+          esc(pick(e.title)) +
           '</h3><p class="timeline-date">' +
-          esc(e.date) +
+          esc(pick(e.date)) +
           '</p><ul class="timeline-details">' +
           details +
           '</ul></div></div>'
@@ -245,7 +261,7 @@
           .join('');
         return (
           '<div class="skill-category"><h3>' +
-          esc(cat.title) +
+          esc(pick(cat.title)) +
           '</h3><div class="skill-bars">' +
           bars +
           '</div></div>'
@@ -258,15 +274,15 @@
     const email = String(contact.email || '');
     return (
       '<h3>' +
-      esc(contact.heading) +
+      esc(pick(contact.heading)) +
       '</h3><p>' +
-      esc(contact.intro) +
+      esc(pick(contact.intro)) +
       '</p><div class="contact-details"><div class="contact-item"><i class="fas fa-envelope"></i><a href="mailto:' +
       esc(email) +
       '">' +
       esc(email) +
       '</a></div><div class="contact-item"><i class="fas fa-map-marker-alt"></i><span>' +
-      esc(contact.location) +
+      esc(pick(contact.location)) +
       '</span></div></div>'
     );
   }
@@ -291,22 +307,24 @@
 
   function renderCv(cv) {
     const url = safeUrl(cv.url);
+    const viewLabel = langIsAr() ? tr('View CV') : 'View CV';
+    const dlLabel = langIsAr() ? tr('Download') : 'Download';
     const viewBtn = url
       ? '<button class="btn primary" data-cv="' +
         esc(url) +
-        '"><span>View CV</span> <i class="fas fa-external-link-alt"></i></button>'
+        '"><span>' + esc(viewLabel) + '</span> <i class="fas fa-external-link-alt"></i></button>'
       : '';
     const dlBtn = url
       ? '<a class="btn" href="' +
         esc(url) +
-        '" download target="_blank" rel="noopener"><span>Download</span> <i class="fas fa-download"></i></a>'
+        '" download target="_blank" rel="noopener"><span>' + esc(dlLabel) + '</span> <i class="fas fa-download"></i></a>'
       : '';
     return (
       '<div class="cv-card"><div class="cv-icon"><i class="fas fa-file-lines"></i></div>' +
       '<div class="cv-info"><h3>' +
-      esc(cv.title) +
+      esc(pick(cv.title)) +
       '</h3><p>' +
-      esc(cv.description) +
+      esc(pick(cv.description)) +
       '</p><div class="cv-actions">' +
       viewBtn +
       dlBtn +
@@ -317,21 +335,21 @@
   // ---- apply ---------------------------------------------------------------
   function applyContent(content) {
     if (!content || typeof content !== 'object') return;
-    // Expose for script.js (typewriter roles + contact email in the mail form).
+    lastContent = content;
     window.PORTFOLIO_CONTENT = content;
 
     try {
       if (content.brand) setText('.navbar .logo', content.brand);
-      if (content.pageTitle) document.title = content.pageTitle;
+      if (content.pageTitle) document.title = pick(content.pageTitle);
     } catch (e) {}
 
     try {
-      if (content.hero && content.hero.title) setText('.hero-content h1', content.hero.title);
+      if (content.hero && content.hero.title) setText('.hero-content h1', pick(content.hero.title));
     } catch (e) {}
 
     try {
       if (content.about && content.about.text != null) {
-        setHtml('#about .about-text', '<p>' + esc(content.about.text) + '</p>');
+        setHtml('#about .about-text', '<p>' + esc(pick(content.about.text)) + '</p>');
       }
     } catch (e) {}
 
@@ -345,16 +363,11 @@
 
     try {
       if (content.certificates) {
-        const el = setHtml(
-          '#certificates .certificates-container',
-          renderCertificates(content.certificates)
-        );
+        const el = setHtml('#certificates .certificates-container', renderCertificates(content.certificates));
         if (el) {
           el.querySelectorAll('.certificate-btn[data-cert]').forEach(function (btn) {
             btn.addEventListener('click', function () {
-              if (typeof window.viewCertificate === 'function') {
-                window.viewCertificate(btn.getAttribute('data-cert'));
-              }
+              if (typeof window.viewCertificate === 'function') window.viewCertificate(btn.getAttribute('data-cert'));
             });
           });
         }
@@ -378,14 +391,12 @@
 
     try {
       if (content.cv) {
-        if (content.cv.heading) setText('#cv h2', content.cv.heading);
+        if (content.cv.heading) setText('#cv h2', pick(content.cv.heading));
         const el = setHtml('#cv .cv-content', renderCv(content.cv));
         if (el) {
           el.querySelectorAll('[data-cv]').forEach(function (btn) {
             btn.addEventListener('click', function () {
-              if (typeof window.viewCertificate === 'function') {
-                window.viewCertificate(btn.getAttribute('data-cv'));
-              }
+              if (typeof window.viewCertificate === 'function') window.viewCertificate(btn.getAttribute('data-cv'));
             });
           });
         }
@@ -393,20 +404,27 @@
     } catch (e) {}
 
     try {
-      if (content.footer && content.footer.text) setText('footer p', content.footer.text);
+      if (content.footer && content.footer.text) setText('footer p', pick(content.footer.text));
     } catch (e) {}
 
-    // Wire up image-only project widgets to the existing modal viewer.
     try {
       document.querySelectorAll('.project-widget[data-img]').forEach(function (btn) {
         btn.addEventListener('click', function () {
-          if (typeof window.viewCertificate === 'function') {
-            window.viewCertificate(btn.getAttribute('data-img'));
-          }
+          if (typeof window.viewCertificate === 'function') window.viewCertificate(btn.getAttribute('data-img'));
         });
       });
     } catch (e) {}
+
+    // Let i18n.js re-apply the static-chrome translation after our render.
+    try {
+      document.dispatchEvent(new CustomEvent('portfolio:rendered'));
+    } catch (e) {}
   }
+
+  // Re-render content in the new language when the toggle is clicked.
+  document.addEventListener('portfolio:langchange', function () {
+    if (lastContent) applyContent(lastContent);
+  });
 
   function load() {
     fetch('/api/content', { headers: { Accept: 'application/json' } })

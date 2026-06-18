@@ -3,7 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const defaultTypewriterTexts = ["Backend Developer.", "Software Engineer.", "Tech Enthusiast."];
     const getTypewriterTexts = () => {
         const roles = window.PORTFOLIO_CONTENT && window.PORTFOLIO_CONTENT.hero && window.PORTFOLIO_CONTENT.hero.roles;
-        return Array.isArray(roles) && roles.length ? roles : defaultTypewriterTexts;
+        const list = Array.isArray(roles) && roles.length ? roles : defaultTypewriterTexts;
+        // pick() resolves the active language (Arabic / English) for each role.
+        return typeof window.PORTFOLIO_PICK === 'function' ? list.map(window.PORTFOLIO_PICK) : list;
     };
     let typeIndex = 0;
     let charIndex = 0;

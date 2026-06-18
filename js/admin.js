@@ -157,6 +157,54 @@
       'FontAwesome class — browse at fontawesome.com/icons'
     );
   }
+  // ---- bilingual {en, ar} field -------------------------------------------
+  function arDefault(en) {
+    return en && window.PORTFOLIO_AR && window.PORTFOLIO_AR[en] ? window.PORTFOLIO_AR[en] : '';
+  }
+  function biVal(v) {
+    var en, ar;
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      en = strv(v.en);
+      ar = strv(v.ar);
+    } else {
+      en = strv(v);
+      ar = '';
+    }
+    // Pre-fill Arabic from the shared dictionary so the admin shows the SAME
+    // Arabic the site displays — the editor and the frontend never disagree.
+    if (!ar) ar = arDefault(en);
+    return { en: en, ar: ar };
+  }
+  function strv(v) {
+    return typeof v === 'string' ? v : v == null ? '' : String(v);
+  }
+  function biTag(en) {
+    return en ? 'EN' : 'ع';
+  }
+  // v is a {en, ar} object (mutated in place by reference)
+  function biInputs(v, multiline) {
+    function col(lang) {
+      const el = multiline
+        ? h('textarea', { dir: lang === 'ar' ? 'rtl' : 'ltr' })
+        : h('input', { type: 'text', dir: lang === 'ar' ? 'rtl' : 'ltr' });
+      el.value = v[lang] == null ? '' : v[lang];
+      el.addEventListener('input', function () {
+        v[lang] = el.value;
+        markDirty();
+      });
+      return h('div', { class: 'bi-col' }, h('span', { class: 'bi-tag' }, biTag(lang === 'en')), el);
+    }
+    return h('div', { class: 'bi' }, col('en'), col('ar'));
+  }
+  function biField(labelText, obj, key, multiline) {
+    if (!(obj[key] && typeof obj[key] === 'object' && !Array.isArray(obj[key]))) obj[key] = biVal(obj[key]);
+    return field(labelText, biInputs(obj[key], multiline), 'Arabic (ع) is optional — leave blank to use the built-in Arabic / English.');
+  }
+  // returns the English side of a bilingual value (for list item titles)
+  function enOf(v) {
+    return (v && typeof v === 'object' ? v.en : v) || '';
+  }
+
   function row() {
     const r = h('div', { class: 'row' });
     appendChildren(r, Array.prototype.slice.call(arguments));
@@ -410,15 +458,20 @@
         frag(
           textField('Brand name (navbar logo)', content.brand, function (v) { content.brand = v; }),
           textField('Browser tab title', content.pageTitle, function (v) { content.pageTitle = v; }),
-          textField('Hero heading', content.hero.title, function (v) { content.hero.title = v; }),
+          biField('Hero heading', content.hero, 'title'),
           subLabel('Rotating roles (typewriter effect)'),
-          stringList(content.hero.roles, 'e.g. Software Engineer.')
+          objectList(content.hero.roles, {
+            addLabel: 'Add role',
+            itemTitle: function (r) { return enOf(r); },
+            makeNew: function () { return { en: '', ar: '' }; },
+            renderBody: function (r) { return biInputs(r, false); },
+          })
         )
       )
     );
 
     root.appendChild(
-      panel('About', 'fa-user', textareaField('About text', content.about.text, function (v) { content.about.text = v; }))
+      panel('About', 'fa-user', biField('About text', content.about, 'text', true))
     );
 
     root.appendChild(
@@ -426,9 +479,9 @@
         'Resume / CV',
         'fa-file-lines',
         frag(
-          textField('Section heading', content.cv.heading, function (v) { content.cv.heading = v; }),
-          textField('Title', content.cv.title, function (v) { content.cv.title = v; }),
-          textareaField('Description', content.cv.description, function (v) { content.cv.description = v; }),
+          biField('Section heading', content.cv, 'heading'),
+          biField('Title', content.cv, 'title'),
+          biField('Description', content.cv, 'description', true),
           imageField(function () { return content.cv.url; }, function (v) { content.cv.url = v; }, 'CV file (PDF) — upload a new one or paste a URL')
         )
       )
@@ -440,11 +493,11 @@
         'fa-layer-group',
         objectList(content.skills, {
           addLabel: 'Add category',
-          itemTitle: function (c) { return c.title; },
-          makeNew: function () { return { title: 'New Category', items: [] }; },
+          itemTitle: function (c) { return enOf(c.title); },
+          makeNew: function () { return { title: { en: 'New Category', ar: '' }, items: [] }; },
           renderBody: function (cat) {
             return frag(
-              textField('Category title', cat.title, function (v) { cat.title = v; }),
+              biField('Category title', cat, 'title'),
               subLabel('Skills in this category'),
               objectList(cat.items, {
                 addLabel: 'Add skill',
@@ -469,42 +522,40 @@
         'fa-diagram-project',
         objectList(content.projects, {
           addLabel: 'Add project',
-          itemTitle: function (p) { return p.title; },
-          makeNew: function () { return { title: 'New Project', description: '', image: '', widgets: [], tech: [], links: [] }; },
+          itemTitle: function (p) { return enOf(p.title); },
+          makeNew: function () { return { title: { en: 'New Project', ar: '' }, description: { en: '', ar: '' }, image: '', widgets: [], tech: [], links: [] }; },
           renderBody: function (p) {
             return frag(
-              textField('Title', p.title, function (v) { p.title = v; }),
-              textareaField('Description', p.description, function (v) { p.description = v; }),
+              biField('Title', p, 'title'),
+              biField('Description', p, 'description', true),
               imageField(function () { return p.image; }, function (v) { p.image = v; }, 'Banner image (top of the card)'),
               subLabel('Tech tags'),
               stringList(p.tech, 'e.g. Python'),
               subLabel('Links / buttons'),
               objectList(p.links, {
                 addLabel: 'Add link',
-                itemTitle: function (l) { return l.label; },
-                makeNew: function () { return { label: 'View Project', url: '', icon: '' }; },
+                itemTitle: function (l) { return enOf(l.label); },
+                makeNew: function () { return { label: { en: 'View Project', ar: '' }, url: '', icon: '' }; },
                 renderBody: function (l) {
                   return frag(
+                    biField('Button label', l, 'label'),
                     row(
-                      textField('Button label', l.label, function (v) { l.label = v; }),
-                      textField('URL', l.url, function (v) { l.url = v; })
-                    ),
-                    iconField('Icon (optional)', l.icon, function (v) { l.icon = v; })
+                      textField('URL', l.url, function (v) { l.url = v; }),
+                      iconField('Icon (optional)', l.icon, function (v) { l.icon = v; })
+                    )
                   );
                 },
               }),
               subLabel('Widgets (small thumbnails shown before the tags)'),
               objectList(p.widgets, {
                 addLabel: 'Add widget',
-                itemTitle: function (w) { return w.label || 'Widget'; },
-                makeNew: function () { return { image: '', url: '', label: '', icon: '' }; },
+                itemTitle: function (w) { return enOf(w.label) || 'Widget'; },
+                makeNew: function () { return { image: '', url: '', label: { en: '', ar: '' }, icon: '' }; },
                 renderBody: function (w) {
                   return frag(
                     imageField(function () { return w.image; }, function (v) { w.image = v; }, 'Widget image'),
-                    row(
-                      textField('Link URL (optional)', w.url, function (v) { w.url = v; }),
-                      textField('Label / tooltip', w.label, function (v) { w.label = v; })
-                    ),
+                    textField('Link URL (optional)', w.url, function (v) { w.url = v; }),
+                    biField('Label / tooltip', w, 'label'),
                     h('div', { class: 'hint' }, 'With a URL, clicking opens the link. Image only → clicking enlarges it.')
                   );
                 },
@@ -521,17 +572,17 @@
         'fa-certificate',
         objectList(content.certificates, {
           addLabel: 'Add certificate',
-          itemTitle: function (c) { return c.title; },
-          makeNew: function () { return { icon: 'fas fa-certificate', title: 'New Certificate', issuer: '', date: '', description: '', skills: [], image: '' }; },
+          itemTitle: function (c) { return enOf(c.title); },
+          makeNew: function () { return { icon: 'fas fa-certificate', title: { en: 'New Certificate', ar: '' }, issuer: { en: '', ar: '' }, date: '', description: { en: '', ar: '' }, skills: [], image: '' }; },
           renderBody: function (c) {
             return frag(
               row(
                 iconField('Icon', c.icon, function (v) { c.icon = v; }),
                 textField('Date', c.date, function (v) { c.date = v; })
               ),
-              textField('Title', c.title, function (v) { c.title = v; }),
-              textField('Issuer', c.issuer, function (v) { c.issuer = v; }),
-              textareaField('Description', c.description, function (v) { c.description = v; }),
+              biField('Title', c, 'title'),
+              biField('Issuer', c, 'issuer'),
+              biField('Description', c, 'description', true),
               subLabel('Skills'),
               stringList(c.skills, 'e.g. Linux'),
               imageField(function () { return c.image; }, function (v) { c.image = v; }, 'Certificate image / PDF (opens in the viewer)')
@@ -547,15 +598,19 @@
         'fa-timeline',
         objectList(content.experience, {
           addLabel: 'Add entry',
-          itemTitle: function (e) { return e.title; },
-          makeNew: function () { return { title: 'New Role', date: '', details: [] }; },
+          itemTitle: function (e) { return enOf(e.title); },
+          makeNew: function () { return { title: { en: 'New Role', ar: '' }, date: { en: '', ar: '' }, details: [] }; },
           renderBody: function (e) {
             return frag(
-              row(
-                textField('Title', e.title, function (v) { e.title = v; }),
-                textField('Date', e.date, function (v) { e.date = v; })
-              ),
-              linesField('Details', e.details)
+              biField('Title', e, 'title'),
+              biField('Date', e, 'date'),
+              subLabel('Details (bullet points)'),
+              objectList(e.details, {
+                addLabel: 'Add bullet',
+                itemTitle: function (d) { return enOf(d); },
+                makeNew: function () { return { en: '', ar: '' }; },
+                renderBody: function (d) { return biInputs(d, true); },
+              })
             );
           },
         })
@@ -568,11 +623,11 @@
         'fa-chart-simple',
         objectList(content.skillBars, {
           addLabel: 'Add category',
-          itemTitle: function (c) { return c.title; },
-          makeNew: function () { return { title: 'New Category', bars: [] }; },
+          itemTitle: function (c) { return enOf(c.title); },
+          makeNew: function () { return { title: { en: 'New Category', ar: '' }, bars: [] }; },
           renderBody: function (cat) {
             return frag(
-              textField('Category title', cat.title, function (v) { cat.title = v; }),
+              biField('Category title', cat, 'title'),
               subLabel('Bars'),
               objectList(cat.bars, {
                 addLabel: 'Add bar',
@@ -596,12 +651,10 @@
         'Contact',
         'fa-envelope',
         frag(
-          textField('Heading', content.contact.heading, function (v) { content.contact.heading = v; }),
-          textareaField('Intro text', content.contact.intro, function (v) { content.contact.intro = v; }),
-          row(
-            textField('Email', content.contact.email, function (v) { content.contact.email = v; }, { type: 'email' }),
-            textField('Location text', content.contact.location, function (v) { content.contact.location = v; })
-          ),
+          biField('Heading', content.contact, 'heading'),
+          biField('Intro text', content.contact, 'intro', true),
+          textField('Email', content.contact.email, function (v) { content.contact.email = v; }, { type: 'email' }),
+          biField('Location text', content.contact, 'location'),
           subLabel('Social links'),
           objectList(content.contact.social, {
             addLabel: 'Add social link',
@@ -622,7 +675,7 @@
     );
 
     root.appendChild(
-      panel('Footer', 'fa-shoe-prints', textField('Footer text', content.footer.text, function (v) { content.footer.text = v; }))
+      panel('Footer', 'fa-shoe-prints', biField('Footer text', content.footer, 'text'))
     );
   }
 
@@ -641,43 +694,43 @@
   function normalize(c) {
     c = obj(c);
     c.brand = c.brand || 'Feras Alkhodari';
-    c.pageTitle = c.pageTitle || c.brand;
+    c.pageTitle = str(c.pageTitle) || c.brand;
     c.hero = obj(c.hero);
-    c.hero.title = str(c.hero.title);
-    c.hero.roles = strArr(c.hero.roles);
+    c.hero.title = biVal(c.hero.title);
+    c.hero.roles = arr(c.hero.roles).map(biVal);
     c.about = obj(c.about);
-    c.about.text = str(c.about.text);
+    c.about.text = biVal(c.about.text);
     c.cv = obj(c.cv);
-    c.cv.heading = c.cv.heading || 'Resume / CV';
-    c.cv.title = str(c.cv.title);
-    c.cv.description = str(c.cv.description);
+    c.cv.heading = biVal(c.cv.heading);
+    if (!c.cv.heading.en) c.cv.heading.en = 'Resume / CV';
+    c.cv.title = biVal(c.cv.title);
+    c.cv.description = biVal(c.cv.description);
     c.cv.url = str(c.cv.url);
-    // Skills (icon grid) — coerce every nested item to {icon,name}
+    // Skills (icon grid) — category title is bilingual; item names stay technical
     c.skills = arr(c.skills).map(function (s) {
       s = obj(s);
       return {
-        title: str(s.title),
+        title: biVal(s.title),
         items: arr(s.items).map(function (it) {
           it = obj(it);
           return { icon: str(it.icon), name: str(it.name) };
         }),
       };
     });
-    // Projects — coerce links/widgets to known shapes
     c.projects = arr(c.projects).map(function (p) {
       p = obj(p);
       return {
-        title: str(p.title),
-        description: str(p.description),
+        title: biVal(p.title),
+        description: biVal(p.description),
         image: str(p.image),
         tech: strArr(p.tech),
         links: arr(p.links).map(function (l) {
           l = obj(l);
-          return { label: str(l.label), url: str(l.url), icon: str(l.icon) };
+          return { label: biVal(l.label), url: str(l.url), icon: str(l.icon) };
         }),
         widgets: arr(p.widgets).map(function (w) {
           w = obj(w);
-          return { image: str(w.image), url: str(w.url), label: str(w.label), icon: str(w.icon) };
+          return { image: str(w.image), url: str(w.url), label: biVal(w.label), icon: str(w.icon) };
         }),
       };
     });
@@ -685,22 +738,22 @@
       x = obj(x);
       return {
         icon: str(x.icon),
-        title: str(x.title),
-        issuer: str(x.issuer),
+        title: biVal(x.title),
+        issuer: biVal(x.issuer),
         date: str(x.date),
-        description: str(x.description),
+        description: biVal(x.description),
         skills: strArr(x.skills),
         image: str(x.image),
       };
     });
     c.experience = arr(c.experience).map(function (e) {
       e = obj(e);
-      return { title: str(e.title), date: str(e.date), details: strArr(e.details) };
+      return { title: biVal(e.title), date: biVal(e.date), details: arr(e.details).map(biVal) };
     });
     c.skillBars = arr(c.skillBars).map(function (cat) {
       cat = obj(cat);
       return {
-        title: str(cat.title),
+        title: biVal(cat.title),
         bars: arr(cat.bars).map(function (b) {
           b = obj(b);
           return { label: str(b.label), value: Math.max(0, Math.min(100, Number(b.value) || 0)) };
@@ -708,16 +761,16 @@
       };
     });
     c.contact = obj(c.contact);
-    c.contact.heading = str(c.contact.heading);
-    c.contact.intro = str(c.contact.intro);
+    c.contact.heading = biVal(c.contact.heading);
+    c.contact.intro = biVal(c.contact.intro);
     c.contact.email = str(c.contact.email);
-    c.contact.location = str(c.contact.location);
+    c.contact.location = biVal(c.contact.location);
     c.contact.social = arr(c.contact.social).map(function (s) {
       s = obj(s);
       return { icon: str(s.icon), url: str(s.url), title: str(s.title) };
     });
     c.footer = obj(c.footer);
-    c.footer.text = str(c.footer.text);
+    c.footer.text = biVal(c.footer.text);
     return c;
   }
 

@@ -264,6 +264,29 @@ a {
   flex: 1;
 }
 
+/* bilingual EN / AR inputs */
+.bi {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.bi-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.bi-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--a-muted);
+}
+@media (max-width: 620px) {
+  .bi {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---- Item cards (list entries) ---- */
 .item {
   background: var(--a-panel-2);
