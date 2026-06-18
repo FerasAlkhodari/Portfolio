@@ -1,6 +1,10 @@
 // Typewriter effect
 document.addEventListener('DOMContentLoaded', function() {
-    const typewriterTexts = ["Backend Developer.", "Software Engineer.", "Tech Enthusiast."];
+    const defaultTypewriterTexts = ["Backend Developer.", "Software Engineer.", "Tech Enthusiast."];
+    const getTypewriterTexts = () => {
+        const roles = window.PORTFOLIO_CONTENT && window.PORTFOLIO_CONTENT.hero && window.PORTFOLIO_CONTENT.hero.roles;
+        return Array.isArray(roles) && roles.length ? roles : defaultTypewriterTexts;
+    };
     let typeIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
@@ -10,8 +14,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function typeWriter() {
         const dynamicText = document.querySelector(".dynamic-text");
+        const typewriterTexts = getTypewriterTexts();
+        if (typeIndex >= typewriterTexts.length) typeIndex = 0;
         const currentText = typewriterTexts[typeIndex];
-        
+
         if (!dynamicText) return;
 
         if (!isDeleting && charIndex < currentText.length) {
@@ -111,7 +117,8 @@ function sendEmail(event) {
     const subject = document.getElementById('subject').value;
     const message = document.getElementById('message').value;
     
-    const mailtoUrl = `mailto:ferasalkhodari51@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
+    const recipient = (window.PORTFOLIO_CONTENT && window.PORTFOLIO_CONTENT.contact && window.PORTFOLIO_CONTENT.contact.email) || 'me@feraswe.com';
+    const mailtoUrl = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)}`;
     
     window.location.href = mailtoUrl;
     

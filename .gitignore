@@ -1,3 +1,18 @@
 node_modules/
 .DS_Store
-*.log 
+*.log
+
+# Build output
+dist/
+
+# Local dev storage (filesystem fallback used by dev-server.js)
+.local-content.json
+.local-uploads/
+
+# Environment secrets — never commit these
+.env
+.env.local
+.env*.local
+
+# Vercel
+.vercel

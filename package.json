@@ -4,10 +4,12 @@
   "description": "Professional Software Engineer Portfolio",
   "scripts": {
     "start": "vite",
-    "build": "vite build",
+    "dev": "node dev-server.js",
+    "build": "node build.js",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vercel/blob": "^2.4.1",
     "aos": "^2.3.4",
     "gsap": "^3.12.5",
     "react": "^18.2.0",
